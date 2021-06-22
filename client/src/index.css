@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  padding: 50px 0;
+  font-family: 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app {
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+
+.submitBtn {
+  margin: 10px;
+  border-radius: 5px;
+  background-color: lightblue;
+  border: transparent;
+  padding: 10px;
+}
+
+.submitBtn:hover {
+  background-color: lightgreen;
+}
+
+form {
+  width: 100px;
+}
+
+form input {
+  margin: 5px;
+}
+
+input {
+  border-radius: 10px;
+  border: 1px solid lightgrey; 
+  min-height: 25px;
+  min-width: 300px;
+}

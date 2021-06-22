@@ -1,0 +1,2 @@
+const PAGE_SIZE = 24; 
+const NUM_SIMILAR_PRODUCTS = 5;
