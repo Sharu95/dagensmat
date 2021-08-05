@@ -4,7 +4,10 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors')
 const products = require('./db');
-const Constants = require('./Constants')
+
+/* Constants */
+const PAGE_SIZE = 24; 
+const NUM_SIMILAR_PRODUCTS = 10;
 
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -51,7 +54,7 @@ app.post('/products', (req, res) => {
 app.get('/products', (req, res) => {
   
   if (Object.keys(req.query).length == 0) {
-    res.send({ status: 200, products: products.slice(0, Constants.PAGE_SIZE) })
+    res.send({ status: 200, products: products.slice(0, PAGE_SIZE) })
   }
   else {
     const { minPrice, maxPrice, category, page } = req.query;
@@ -59,12 +62,12 @@ app.get('/products', (req, res) => {
     filtered = filtered.filter( item => !maxPrice || item.price <= Number.parseFloat(maxPrice))
     filtered = filtered.filter( item => !category || item.category === category)
     
-    if (filtered.length > Constants.PAGE_SIZE) {
-      const offset = !page || page < 1 ? 0 : (Number.parseInt(page) - 1) * Constants.PAGE_SIZE;
+    if (filtered.length > PAGE_SIZE) {
+      const offset = !page || page < 1 ? 0 : (Number.parseInt(page) - 1) * PAGE_SIZE;
       if (isNaN(offset)) {
         res.send({ status: 400, message: "Bad request: invalid page number."})
       }
-      filtered = filtered.slice(offset, offset + Constants.PAGE_SIZE);
+      filtered = filtered.slice(offset, offset + PAGE_SIZE);
     }
     res.send({ status: 200, products: filtered })
   }
@@ -81,10 +84,11 @@ app.get('/products/match/:id', (req, res) => {
   }
   else {
     const { price, category } = matchedProducts[0]
-    const sameProducts = products
-      .filter(item => item.category === category)
-      .sort((a, b) => a.price < b.price)
-      .slice(0, Constants.NUM_SIMILAR_PRODUCTS)
-    res.send({ status: 200, products: sameProducts })
+    const sameCategoryProducts = products.filter(item => item.category === category)
+    const mostSimilar = sameCategoryProducts
+      .sort((a, b) => Math.abs(a.price - price) - Math.abs(b.price - price)) // sort by deltas
+      .slice(0, NUM_SIMILAR_PRODUCTS)   
+
+    res.send({ status: 200, products: mostSimilar })
   }
 })
